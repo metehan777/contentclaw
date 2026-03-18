@@ -1,0 +1,8 @@
+node_modules/
+dist/
+*.db
+*.db-wal
+*.db-shm
+*.db-journal
+contentclaw.config.json
+.env
