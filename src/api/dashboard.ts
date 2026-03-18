@@ -308,7 +308,7 @@ export function docsPage(config: ServerConfig): string {
       desc: "Generate new pages via the API. Triggers AI content generation.",
       body: `{
   "provider": "openai",       // optional — defaults to config
-  "model": "gpt-5.2",         // optional — defaults to config
+  "model": "gpt-5.4",         // optional — defaults to config
   "seed_data": [
     { "keyword": "best coffee makers" },
     { "keyword": "espresso guide", "category": "coffee" }

@@ -5,10 +5,10 @@ import * as logger from "../utils/logger.js";
 import type { PseoConfig, ProviderName } from "../types/index.js";
 
 const MODEL_DEFAULTS: Record<ProviderName, string> = {
-  openai: "gpt-5.2",
+  openai: "gpt-5.4",
   gemini: "gemini-3-flash-preview",
   anthropic: "claude-opus-4-6",
-  xai: "grok-3",
+  xai: "grok-4-1-fast",
   qwen: "qwen-max",
   ollama: "llama3",
 };

@@ -75,10 +75,10 @@ contentclaw generate "fitness" --competitor https://muscleandstrength.com/sitema
 
 | Provider | Default Model | Web Search | Env Variable |
 |----------|--------------|------------|--------------|
-| OpenAI | gpt-5.2 | Responses API `web_search` | `OPENAI_API_KEY` |
+| OpenAI | gpt-5.4 | Responses API `web_search` | `OPENAI_API_KEY` |
 | Google Gemini | gemini-3-flash-preview | Google Search grounding | `GEMINI_API_KEY` |
 | Anthropic | claude-opus-4-6 | `web_search_20250305` | `ANTHROPIC_API_KEY` |
-| X.ai | grok-3 | Responses API `web_search` | `XAI_API_KEY` |
+| X.ai | grok-4-1-fast | Responses API `web_search` | `XAI_API_KEY` |
 | Qwen | qwen-max | - | `QWEN_API_KEY` |
 | Ollama | any local model | - | `OLLAMA_HOST` |
 
@@ -306,7 +306,7 @@ curl -X POST http://localhost:3099/api/generate \
 ```json
 {
   "provider": "openai",
-  "model": "gpt-5.2",
+  "model": "gpt-5.4",
   "language": "en",
   "tone": "informative",
   "wordCount": 1500,

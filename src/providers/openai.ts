@@ -13,7 +13,7 @@ export class OpenAIProvider extends BaseProvider {
 
   async generate(prompt: string, config: GenerateConfig): Promise<GeneratedContent> {
     const client = this.getClient(config);
-    const model = config.model || "gpt-5.2";
+    const model = config.model || "gpt-5.4";
 
     const tools: any[] = [];
     if (config.webSearch !== false) {
@@ -54,7 +54,7 @@ export class OpenAIProvider extends BaseProvider {
 
   async generateRaw(prompt: string, config: GenerateConfig): Promise<string> {
     const client = this.getClient(config);
-    const model = config.model || "gpt-5.2";
+    const model = config.model || "gpt-5.4";
     const response = await client.responses.create({ model, input: prompt });
     return response.output_text;
   }

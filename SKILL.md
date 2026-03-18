@@ -34,10 +34,10 @@ At least one AI provider API key is required. Set as environment variables or pa
 
 | Provider | Environment Variable | Default Model | Notes |
 |----------|---------------------|---------------|-------|
-| OpenAI | `OPENAI_API_KEY` | `gpt-5.2` | Web search via `web_search` tool |
+| OpenAI | `OPENAI_API_KEY` | `gpt-5.4` | Web search via `web_search` tool |
 | Gemini | `GEMINI_API_KEY` | `gemini-3-flash-preview` | Web search via `googleSearch` grounding |
 | Anthropic | `ANTHROPIC_API_KEY` | `claude-opus-4-6` | Web search via `web_search_20250305` tool |
-| xAI (Grok) | `XAI_API_KEY` | `grok-3` | Web search via `web_search` tool |
+| xAI (Grok) | `XAI_API_KEY` | `grok-4-1-fast` | Web search via `web_search` tool |
 | Qwen | `QWEN_API_KEY` | `qwen-max` | No native web search |
 | Ollama | *(none needed)* | `llama3` | Local models, no web search |
 
@@ -62,7 +62,7 @@ This creates `contentclaw.config.json` in the current directory with all setting
 ```json
 {
   "provider": "openai",
-  "model": "gpt-5.2",
+  "model": "gpt-5.4",
   "apiKey": "sk-...",
   "language": "en",
   "tone": "informative",
@@ -533,9 +533,9 @@ PARALLEL_API_KEY="key" contentclaw generate "seo" --competitor https://moz.com/s
 
 | Provider | Web Search | Default Model | Rate Limit (Tier 1) |
 |----------|-----------|---------------|---------------------|
-| `openai` | Yes (`web_search` tool) | `gpt-5.2` | 500 RPM, 5 concurrent |
+| `openai` | Yes (`web_search` tool) | `gpt-5.4` | 500 RPM, 5 concurrent |
 | `gemini` | Yes (`googleSearch` grounding) | `gemini-3-flash-preview` | 1000 RPM, 10 concurrent |
 | `anthropic` | Yes (`web_search_20250305`) | `claude-opus-4-6` | 50 RPM, 3 concurrent |
-| `xai` | Yes (`web_search` tool) | `grok-3` | 60 RPM, 3 concurrent |
+| `xai` | Yes (`web_search` tool) | `grok-4-1-fast` | 60 RPM, 3 concurrent |
 | `qwen` | No | `qwen-max` | 60 RPM, 3 concurrent |
 | `ollama` | No | `llama3` | 999 RPM, 1 concurrent |

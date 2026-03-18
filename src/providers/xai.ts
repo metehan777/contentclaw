@@ -14,7 +14,7 @@ export class XAIProvider extends BaseProvider {
 
   async generate(prompt: string, config: GenerateConfig): Promise<GeneratedContent> {
     const client = this.getClient(config);
-    const model = config.model || "grok-3";
+    const model = config.model || "grok-4-1-fast";
 
     if (config.webSearch !== false) {
       try {
@@ -65,7 +65,7 @@ export class XAIProvider extends BaseProvider {
 
   async generateRaw(prompt: string, config: GenerateConfig): Promise<string> {
     const client = this.getClient(config);
-    const model = config.model || "grok-3";
+    const model = config.model || "grok-4-1-fast";
     const response = await client.chat.completions.create({
       model,
       messages: [{ role: "user", content: prompt }],
