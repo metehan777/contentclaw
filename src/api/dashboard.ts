@@ -110,13 +110,22 @@ ${body}
 }
 
 export function dashboardPage(config: ServerConfig): string {
-  const nav = `<a href="/" class="active">Dashboard</a><a href="/docs">API Docs</a>`;
+  const nav = `<a href="/" class="active">Dashboard</a><a href="/docs">API Docs</a><a href="/experts">Follow SEO Experts</a>`;
   const body = `
 <div class="container">
   <div class="stats">
     <div class="stat-card"><div class="label">Total Pages</div><div class="value accent" id="totalPages">—</div></div>
     <div class="stat-card"><div class="label">Server</div><div class="value" style="font-size:16px;color:var(--green)"><span id="liveDot" class="live-dot">●</span> Live</div></div>
     <div class="stat-card"><div class="label">API Base</div><div class="value" style="font-size:14px;color:var(--text2)">${baseUrl(config)}/api</div></div>
+  </div>
+
+  <div style="background:linear-gradient(135deg,rgba(234,179,8,.08),rgba(249,115,22,.08));border:1px solid rgba(234,179,8,.25);border-radius:12px;padding:16px 20px;margin-bottom:24px;display:flex;gap:12px;align-items:flex-start">
+    <span style="font-size:20px;flex-shrink:0">⚠️</span>
+    <div style="font-size:13px;color:var(--text2);line-height:1.6">
+      <strong style="color:var(--yellow)">Content at scale - read before publishing.</strong>
+      Publishing large volumes of AI-generated pages all at once can trigger Google quality filters or algorithm penalties. Your rankings may initially rise, then drop after an update. Publish gradually, review content before going live, add unique value (images, original data, experience), and monitor Search Console for manual actions.
+      <a href="/experts" style="color:var(--accent);margin-left:4px">Follow SEO experts to stay updated →</a>
+    </div>
   </div>
 
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
@@ -234,7 +243,7 @@ setInterval(()=>loadPages(true),3000);
 
 export function docsPage(config: ServerConfig): string {
   const base = baseUrl(config);
-  const nav = `<a href="/">Dashboard</a><a href="/docs" class="active">API Docs</a>`;
+  const nav = `<a href="/">Dashboard</a><a href="/docs" class="active">API Docs</a><a href="/experts">Follow SEO Experts</a>`;
 
   const endpoints = [
     {
@@ -424,6 +433,94 @@ for (const page of data) {
 </style>`;
 
   return layout("API Docs", nav, body, config);
+}
+
+export function expertsPage(config: ServerConfig): string {
+  const nav = `<a href="/">Dashboard</a><a href="/docs">API Docs</a><a href="/experts" class="active">Follow SEO Experts</a>`;
+
+  const experts = [
+    { name: "Lily Ray", title: "VP of SEO Strategy & Research, Amsive", x: "lilyraynyc", linkedin: "lily-ray-44755615", focus: "Google algorithm updates, E-E-A-T, YMYL, AI content impact" },
+    { name: "Barry Schwartz", title: "Editor, Search Engine Roundtable", x: "rustybrick", linkedin: "rustybrick", focus: "Search news, Google updates, algorithm changes" },
+    { name: "Jes Scholz", title: "Growth Marketing Consultant & SEO Futurist", x: "jes_scholz", linkedin: "jes-scholz", focus: "Entity SEO, topical authority, AI search impact, technical SEO" },
+    { name: "John Shehata", title: "CEO & Founder, NewzDash & GDdash", x: "JShehata", linkedin: "johnshehata", focus: "News SEO, Google Discover, audience development, editorial SEO" },
+    { name: "Marie Haynes", title: "CEO, Marie Haynes Consulting", x: "marie_haynes", linkedin: "marie-haynes", focus: "Google penalties, E-E-A-T, algorithm recovery" },
+    { name: "Aleyda Solis", title: "International SEO Consultant & Founder, Orainti", x: "aleyda", linkedin: "aleydasolis", focus: "International SEO, technical SEO, SEO strategy" },
+    { name: "Kevin Indig", title: "Growth Advisor", x: "Kevin_Indig", linkedin: "kevinindig", focus: "SEO strategy, growth, programmatic SEO, AI search" },
+    { name: "Cyrus Shepard", title: "Founder, Zyppy", x: "CyrusShepard", linkedin: "cyrusshepard", focus: "On-page SEO, CTR optimization, Google ranking factors" },
+    { name: "Glenn Gabe", title: "SEO Consultant, G-Squared Interactive", x: "glenngabe", linkedin: "glenngabe", focus: "Algorithm updates, site audits, Google penalties" },
+    { name: "Mordy Oberstein", title: "Head of Brand, SE Ranking", x: "MordyOberstein", linkedin: "mordyoberstein", focus: "Search trends, SERP analysis, SEO branding" },
+    { name: "Brodie Clark", title: "SEO Consultant", x: "brodieseo", linkedin: "brodieclark", focus: "Google SERP changes, Search features, algorithm tracking" },
+    { name: "Patrick Stox", title: "Product Advisor, Technical SEO & Brand Ambassador, Ahrefs", x: "patrickstox", linkedin: "patrickstox", focus: "Technical SEO, site architecture, crawling" },
+    { name: "Gagan Ghotra", title: "SEO Consultant, Gagan Ghotra Consulting", x: "gaganghotra_", linkedin: "gagan-ghotra", focus: "Google Discover, technical SEO, algorithm updates, AI Overviews" },
+    { name: "Harpreet Singh Chatha", title: "SEO & AI Search Consultant, HarpsDigital", x: "harpreetchatha_", linkedin: "harpreet-singh-11889228a", focus: "Ecommerce SEO, international SEO, AI search optimization" },
+    { name: "Metehan Yesilyurt", title: "Founder, metehan.ai", x: "metehan777", linkedin: "metehanyesilyurt", focus: "AI search optimization, programmatic SEO, LLM visibility" },
+  ];
+
+  const expertsHtml = experts.map(e => `
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 24px;display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:16px;font-weight:600;color:var(--text)">${escHtml(e.name)}</div>
+          <div style="font-size:13px;color:var(--text2)">${escHtml(e.title)}</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <a href="https://x.com/${e.x}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:4px;font-size:12px;padding:5px 12px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);font-weight:500;transition:all .15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text2)'">𝕏 @${e.x}</a>
+          <a href="https://linkedin.com/in/${e.linkedin}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:4px;font-size:12px;padding:5px 12px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);font-weight:500;transition:all .15s" onmouseover="this.style.borderColor='#0a66c2';this.style.color='#0a66c2'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text2)'">in LinkedIn</a>
+        </div>
+      </div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.5">${escHtml(e.focus)}</div>
+    </div>
+  `).join("");
+
+  const body = `
+<div class="container">
+  <div style="margin-bottom:32px">
+    <h1 style="font-size:24px;font-weight:700;margin-bottom:8px">Follow SEO Experts</h1>
+    <p style="color:var(--text2);font-size:15px;max-width:700px;line-height:1.7">
+      Programmatic SEO is powerful, but it comes with risks. Google's algorithms are constantly evolving, and what works today might trigger penalties tomorrow. Stay informed by following these industry experts who track algorithm updates, share best practices, and help you avoid costly mistakes.
+    </p>
+  </div>
+
+  <div style="background:linear-gradient(135deg,rgba(234,179,8,.08),rgba(249,115,22,.08));border:1px solid rgba(234,179,8,.25);border-radius:12px;padding:20px 24px;margin-bottom:32px">
+    <div style="font-size:14px;color:var(--text);line-height:1.7">
+      <strong style="color:var(--yellow)">Why this matters:</strong>
+      Publishing large volumes of AI-generated content all at once might seem like a fast path to scaling your SEO, AEO, or GEO strategy. But search engines are watching. After an initial boost, you risk being penalized by Google or getting caught in an algorithm update. Rankings can drop overnight, and recovery takes months. The difference between success and penalty often comes down to content quality, publishing velocity, and staying ahead of algorithm changes. These experts will help you do that.
+    </div>
+  </div>
+
+  <div class="section-title">Experts to Follow <span class="badge">${experts.length}</span></div>
+  <div style="display:flex;flex-direction:column;gap:12px">
+    ${expertsHtml}
+  </div>
+
+  <div style="margin-top:48px;padding:24px;background:var(--surface);border:1px solid var(--border);border-radius:12px">
+    <div class="section-title" style="margin-bottom:12px">Best Practices for Programmatic SEO</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px">
+      <div style="padding:16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
+        <div style="font-size:14px;font-weight:600;margin-bottom:6px;color:var(--green)">Publish Gradually</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.6">Drip-feed pages over days or weeks. Publishing 1000 pages overnight is a red flag for quality algorithms.</div>
+      </div>
+      <div style="padding:16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
+        <div style="font-size:14px;font-weight:600;margin-bottom:6px;color:var(--green)">Review Before Publishing</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.6">Read every page. Fix errors, add nuance, remove anything that sounds generic. Human review is non-negotiable.</div>
+      </div>
+      <div style="padding:16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
+        <div style="font-size:14px;font-weight:600;margin-bottom:6px;color:var(--green)">Add Unique Value</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.6">Original images, proprietary data, first-hand experience, expert quotes. Content that only you can provide.</div>
+      </div>
+      <div style="padding:16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
+        <div style="font-size:14px;font-weight:600;margin-bottom:6px;color:var(--green)">Monitor & Adapt</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.6">Watch Google Search Console for manual actions and ranking shifts. Follow the experts above to catch algorithm updates early.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:32px;padding:16px;color:var(--text2);font-size:13px">
+    ContentClaw by <a href="https://metehan.ai">metehan.ai</a> · <a href="https://www.npmjs.com/package/contentclaw">npm</a> · <a href="https://github.com/metehan777/contentclaw">GitHub</a>
+  </div>
+</div>`;
+
+  return layout("Follow SEO Experts", nav, body, config);
 }
 
 function escHtml(s: string): string {

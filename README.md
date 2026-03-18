@@ -1,8 +1,11 @@
 # ContentClaw
 
+[![npm version](https://img.shields.io/npm/v/contentclaw.svg)](https://www.npmjs.com/package/contentclaw)
+[![GitHub](https://img.shields.io/github/stars/metehan777/contentclaw)](https://github.com/metehan777/contentclaw)
+
 **Universal Content Engine** - Generate pages with AI from any topic, analyze competitor sitemaps, and serve via local REST API for any CMS.
 
-Built by [metehan.ai](https://metehan.ai)
+[npm](https://www.npmjs.com/package/contentclaw) | [GitHub](https://github.com/metehan777/contentclaw) | Built by [metehan.ai](https://metehan.ai)
 
 ## What is ContentClaw?
 

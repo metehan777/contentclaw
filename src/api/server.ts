@@ -1,7 +1,7 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import { registerRoutes } from "./routes.js";
-import { dashboardPage, docsPage } from "./dashboard.js";
+import { dashboardPage, docsPage, expertsPage } from "./dashboard.js";
 import type { ServerConfig } from "../types/index.js";
 
 export async function createServer(config: ServerConfig) {
@@ -15,6 +15,10 @@ export async function createServer(config: ServerConfig) {
 
   app.get("/docs", async (_request, reply) => {
     reply.type("text/html").send(docsPage(config));
+  });
+
+  app.get("/experts", async (_request, reply) => {
+    reply.type("text/html").send(expertsPage(config));
   });
 
   await registerRoutes(app);

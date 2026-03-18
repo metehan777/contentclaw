@@ -14,7 +14,7 @@ if (!isJsonMode) {
 program
   .name("contentclaw")
   .description("ContentClaw - Programmatic SEO engine. Generate pages with AI, serve via API.")
-  .version("3.4.0");
+  .version("3.5.0");
 
 program
   .command("init")

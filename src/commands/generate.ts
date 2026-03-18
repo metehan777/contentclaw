@@ -504,5 +504,24 @@ export async function generateCommand(
       `Generation complete: ${chalk.green(`${successCount} succeeded`)}, ${chalk.red(`${failCount} failed`)}`
     );
     logger.info('Run "contentclaw serve" to start the API server and access your pages.');
+
+    if (successCount > 10) {
+      console.log("");
+      console.log(chalk.yellow("  ⚠  ") + chalk.yellow.bold("Content at scale - read this before publishing"));
+      console.log(chalk.gray("  ─────────────────────────────────────────────────────────────────"));
+      console.log(chalk.gray("  Publishing large volumes of AI-generated content all at once can"));
+      console.log(chalk.gray("  trigger Google quality filters or algorithm penalties. Your rankings"));
+      console.log(chalk.gray("  may initially rise, then drop significantly after an update."));
+      console.log("");
+      console.log(chalk.gray("  Best practices:"));
+      console.log(chalk.gray("    • Publish gradually - drip-feed pages over days or weeks"));
+      console.log(chalk.gray("    • Review and edit content before publishing"));
+      console.log(chalk.gray("    • Add unique value - images, data, personal experience"));
+      console.log(chalk.gray("    • Monitor Google Search Console for manual actions"));
+      console.log(chalk.gray("    • Follow SEO experts to stay updated on algorithm changes"));
+      console.log(chalk.gray("  ─────────────────────────────────────────────────────────────────"));
+      console.log(chalk.gray("  Learn more: ") + chalk.cyan("http://localhost:3099/experts"));
+      console.log("");
+    }
   }
 }
