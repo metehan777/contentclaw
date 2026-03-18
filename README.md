@@ -363,7 +363,7 @@ The agent will shell out to `contentclaw` with `--json --yes` flags.
 Install the native OpenClaw plugin for direct tool registration - no shelling out:
 
 ```bash
-openclaw plugins install @contentclaw/openclaw-plugin
+openclaw plugins install contentclaw-openclaw-plugin
 ```
 
 This registers 5 tools into the OpenClaw runtime:

@@ -1,5 +1,5 @@
 {
-  "name": "@contentclaw/openclaw-plugin",
+  "name": "contentclaw-openclaw-plugin",
   "version": "1.0.0",
   "description": "OpenClaw plugin for ContentClaw - generate AI content pages, analyze competitors, serve via REST API",
   "main": "dist/index.js",

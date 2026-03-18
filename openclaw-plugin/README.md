@@ -13,7 +13,7 @@ npm install -g contentclaw
 ### Install the plugin
 
 ```bash
-openclaw plugins install @contentclaw/openclaw-plugin
+openclaw plugins install contentclaw-openclaw-plugin
 ```
 
 Or install from local path:

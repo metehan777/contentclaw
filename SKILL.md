@@ -547,7 +547,7 @@ ContentClaw ships a native OpenClaw plugin for deep agent integration. Instead o
 ### Install
 
 ```bash
-openclaw plugins install @contentclaw/openclaw-plugin
+openclaw plugins install contentclaw-openclaw-plugin
 ```
 
 Or from local path (if you cloned the repo):
