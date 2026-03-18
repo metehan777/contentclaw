@@ -1,0 +1,35 @@
+{
+  "name": "@contentclaw/openclaw-plugin",
+  "version": "1.0.0",
+  "description": "OpenClaw plugin for ContentClaw - generate AI content pages, analyze competitors, serve via REST API",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "openclaw",
+    "openclaw-plugin",
+    "contentclaw",
+    "seo",
+    "content-generation",
+    "ai-content",
+    "programmatic-seo"
+  ],
+  "author": "metehan.ai",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/metehan777/contentclaw"
+  },
+  "files": [
+    "dist/",
+    "skills/",
+    "openclaw.plugin.json",
+    "README.md"
+  ],
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

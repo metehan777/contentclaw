@@ -6,3 +6,9 @@ dist/
 *.db-journal
 contentclaw.config.json
 .env
+promo-video/out/
+promo-video/node_modules/
+promo-video/package-lock.json
+openclaw-plugin/dist/
+openclaw-plugin/node_modules/
+openclaw-plugin/package-lock.json

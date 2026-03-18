@@ -1,0 +1,59 @@
+{
+  "id": "contentclaw",
+  "name": "ContentClaw",
+  "version": "1.0.0",
+  "description": "Generate AI-powered content pages at scale, analyze competitor sitemaps, and serve via REST API. Supports OpenAI, Gemini, Anthropic, xAI, Qwen, and Ollama.",
+  "skills": ["./skills"],
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "defaultProvider": {
+        "type": "string",
+        "enum": ["openai", "gemini", "anthropic", "xai", "qwen", "ollama"],
+        "default": "openai",
+        "description": "Default AI provider for content generation"
+      },
+      "defaultModel": {
+        "type": "string",
+        "description": "Default model override (uses provider default if empty)"
+      },
+      "language": {
+        "type": "string",
+        "default": "en",
+        "description": "Content language code"
+      },
+      "webSearch": {
+        "type": "boolean",
+        "default": true,
+        "description": "Enable web search/grounding for real external links"
+      },
+      "workingDirectory": {
+        "type": "string",
+        "description": "Directory where contentclaw.db and config live (defaults to cwd)"
+      }
+    }
+  },
+  "uiHints": {
+    "defaultProvider": {
+      "label": "AI Provider",
+      "placeholder": "openai"
+    },
+    "defaultModel": {
+      "label": "Model",
+      "placeholder": "gpt-5.4"
+    },
+    "language": {
+      "label": "Language",
+      "placeholder": "en"
+    },
+    "webSearch": {
+      "label": "Web Search",
+      "placeholder": "true"
+    },
+    "workingDirectory": {
+      "label": "Working Directory",
+      "placeholder": "/path/to/project"
+    }
+  }
+}

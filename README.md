@@ -346,11 +346,55 @@ curl -X POST http://localhost:3099/api/generate \
 
 ## OpenClaw Integration
 
-ContentClaw ships with a `SKILL.md` for [OpenClaw](https://github.com/openclaw/openclaw) agents:
+ContentClaw offers two levels of integration with [OpenClaw](https://docs.openclaw.ai):
+
+### Option 1: SKILL.md (Lightweight)
+
+Copy the bundled skill file so OpenClaw agents know how to use the CLI:
 
 ```bash
-cp $(npm root -g)/contentclaw/SKILL.md ~/.openclaw/workspace/skills/contentclaw/SKILL.md
+cp $(npm root -g)/contentclaw/SKILL.md ~/.openclaw/skills/contentclaw/SKILL.md
 ```
+
+The agent will shell out to `contentclaw` with `--json --yes` flags.
+
+### Option 2: Native Plugin (Full Integration)
+
+Install the native OpenClaw plugin for direct tool registration - no shelling out:
+
+```bash
+openclaw plugins install @contentclaw/openclaw-plugin
+```
+
+This registers 5 tools into the OpenClaw runtime:
+
+| Tool | Description |
+|------|-------------|
+| `contentclaw_generate` | Generate content pages from keywords with all CLI options |
+| `contentclaw_competitor` | Analyze competitor sitemap and generate competing content |
+| `contentclaw_pages` | List generated pages (paginated, filterable) |
+| `contentclaw_page` | Get a specific page by slug with full HTML and links |
+| `contentclaw_serve` | Start the API server and dashboard |
+
+Configure in `~/.openclaw/openclaw.json`:
+
+```json
+{
+  "plugins": {
+    "entries": {
+      "contentclaw": {
+        "config": {
+          "defaultProvider": "openai",
+          "language": "en",
+          "webSearch": true
+        }
+      }
+    }
+  }
+}
+```
+
+The plugin ships with `openclaw.plugin.json` (manifest + JSON Schema config validation), bundled skills, and `uiHints` for config UI rendering. See [`openclaw-plugin/`](./openclaw-plugin/) for the full source.
 
 ## License
 
