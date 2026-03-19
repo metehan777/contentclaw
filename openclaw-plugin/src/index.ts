@@ -1,4 +1,4 @@
-import { execFileSync, execSync } from "node:child_process";
+import { execFileSync, spawn } from "node:child_process";
 
 const EXEC_OPTIONS = {
   encoding: "utf-8" as const,
@@ -292,15 +292,11 @@ export default function register(api: any) {
         ? params.port
         : 3099;
 
-      try {
-        execFileSync("contentclaw", ["serve", "--port", String(port)], {
-          encoding: "utf-8",
-          timeout: 5000,
-          stdio: "ignore",
-        });
-      } catch {
-        // background process - expected timeout since server keeps running
-      }
+      const child = spawn("contentclaw", ["serve", "--port", String(port)], {
+        detached: true,
+        stdio: "ignore",
+      });
+      child.unref();
 
       return {
         content: [{
