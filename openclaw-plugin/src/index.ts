@@ -1,25 +1,78 @@
-import { execSync } from "node:child_process";
+import { execFileSync, execSync } from "node:child_process";
 
-function run(cmd: string, cwd?: string): string {
-  return execSync(cmd, {
+const EXEC_OPTIONS = {
+  encoding: "utf-8" as const,
+  timeout: 300_000,
+  maxBuffer: 10 * 1024 * 1024,
+};
+
+const VALID_PROVIDERS = new Set([
+  "openai", "gemini", "anthropic", "xai", "qwen", "ollama",
+]);
+const VALID_TYPES = new Set([
+  "auto", "blog", "landing", "glossary", "comparison",
+  "listicle", "how-to", "alternatives", "review", "hub",
+]);
+
+function runFile(bin: string, args: string[], cwd?: string): string {
+  return execFileSync(bin, args, {
+    ...EXEC_OPTIONS,
     cwd: cwd || process.cwd(),
-    encoding: "utf-8",
-    timeout: 300_000,
-    maxBuffer: 10 * 1024 * 1024,
-  }).trim();
+  }).toString().trim();
 }
 
 function ensureBinary(): boolean {
   try {
-    run("contentclaw --version");
+    runFile("contentclaw", ["--version"]);
     return true;
   } catch {
     return false;
   }
 }
 
+function sanitizeKeyword(kw: string): string {
+  return kw.replace(/[^\w\s\-.,!?'"()&+:;/\\@#$%=\[\]{}]/g, "").slice(0, 200);
+}
+
+function isValidUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "https:" || parsed.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
+function isValidSlug(slug: string): boolean {
+  return /^[a-z0-9][a-z0-9\-]*$/.test(slug) && slug.length <= 200;
+}
+
+function isValidLang(lang: string): boolean {
+  return /^[a-z]{2}(-[A-Z]{2})?$/.test(lang);
+}
+
+function notInstalledError() {
+  return {
+    content: [{
+      type: "text",
+      text: JSON.stringify({
+        success: false,
+        error: "contentclaw is not installed. Run: npm install -g contentclaw",
+      }),
+    }],
+  };
+}
+
+function errorResult(msg: string) {
+  return {
+    content: [{
+      type: "text",
+      text: JSON.stringify({ success: false, error: msg }),
+    }],
+  };
+}
+
 export default function register(api: any) {
-  // Tool: Generate content pages
   api.registerTool({
     name: "contentclaw_generate",
     description:
@@ -40,19 +93,10 @@ export default function register(api: any) {
         type: {
           type: "string",
           enum: [
-            "auto",
-            "blog",
-            "landing",
-            "glossary",
-            "comparison",
-            "listicle",
-            "how-to",
-            "alternatives",
-            "review",
-            "hub",
+            "auto", "blog", "landing", "glossary", "comparison",
+            "listicle", "how-to", "alternatives", "review", "hub",
           ],
-          description:
-            "Content type. Use 'auto' (default) to let AI plan the best mix.",
+          description: "Content type. Use 'auto' (default) to let AI plan the best mix.",
         },
         language: {
           type: "string",
@@ -64,58 +108,44 @@ export default function register(api: any) {
         },
         noWebSearch: {
           type: "boolean",
-          description:
-            "Disable web search/grounding (external links will be stripped)",
+          description: "Disable web search/grounding (external links will be stripped)",
         },
       },
       required: ["keywords"],
     },
     async execute(_id: string, params: any) {
-      if (!ensureBinary()) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify({
-                success: false,
-                error:
-                  "contentclaw is not installed. Run: npm install -g contentclaw",
-              }),
-            },
-          ],
-        };
+      if (!ensureBinary()) return notInstalledError();
+
+      const args = ["generate"];
+
+      const keywords: string[] = params.keywords || [];
+      for (const kw of keywords) {
+        args.push(sanitizeKeyword(kw));
       }
 
-      const args = ["contentclaw", "generate"];
-      args.push(...(params.keywords || []));
       args.push("--json", "--yes");
 
-      if (params.provider) args.push("-p", params.provider);
-      if (params.type) args.push("-t", params.type);
-      if (params.language) args.push("-l", params.language);
+      if (params.provider && VALID_PROVIDERS.has(params.provider)) {
+        args.push("-p", params.provider);
+      }
+      if (params.type && VALID_TYPES.has(params.type)) {
+        args.push("-t", params.type);
+      }
+      if (params.language && isValidLang(params.language)) {
+        args.push("-l", params.language);
+      }
       if (params.force) args.push("--force");
       if (params.noWebSearch) args.push("--no-web-search");
 
       try {
-        const output = run(args.join(" "));
+        const output = runFile("contentclaw", args);
         return { content: [{ type: "text", text: output }] };
       } catch (err: any) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify({
-                success: false,
-                error: err.stderr || err.message || String(err),
-              }),
-            },
-          ],
-        };
+        return errorResult(err.stderr || err.message || String(err));
       }
     },
   });
 
-  // Tool: Analyze competitor sitemap
   api.registerTool({
     name: "contentclaw_competitor",
     description:
@@ -140,52 +170,32 @@ export default function register(api: any) {
       required: ["topic", "sitemapUrl"],
     },
     async execute(_id: string, params: any) {
-      if (!ensureBinary()) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify({
-                success: false,
-                error:
-                  "contentclaw is not installed. Run: npm install -g contentclaw",
-              }),
-            },
-          ],
-        };
+      if (!ensureBinary()) return notInstalledError();
+
+      if (!isValidUrl(params.sitemapUrl)) {
+        return errorResult("Invalid sitemap URL. Must be a valid http:// or https:// URL.");
       }
 
       const args = [
-        "contentclaw",
         "generate",
-        JSON.stringify(params.topic),
-        "--competitor",
-        params.sitemapUrl,
-        "--json",
-        "--yes",
+        sanitizeKeyword(params.topic),
+        "--competitor", params.sitemapUrl,
+        "--json", "--yes",
       ];
-      if (params.provider) args.push("-p", params.provider);
+
+      if (params.provider && VALID_PROVIDERS.has(params.provider)) {
+        args.push("-p", params.provider);
+      }
 
       try {
-        const output = run(args.join(" "));
+        const output = runFile("contentclaw", args);
         return { content: [{ type: "text", text: output }] };
       } catch (err: any) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify({
-                success: false,
-                error: err.stderr || err.message || String(err),
-              }),
-            },
-          ],
-        };
+        return errorResult(err.stderr || err.message || String(err));
       }
     },
   });
 
-  // Tool: List generated pages
   api.registerTool({
     name: "contentclaw_pages",
     description:
@@ -208,48 +218,30 @@ export default function register(api: any) {
       },
     },
     async execute(_id: string, params: any) {
-      if (!ensureBinary()) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify({
-                success: false,
-                error:
-                  "contentclaw is not installed. Run: npm install -g contentclaw",
-              }),
-            },
-          ],
-        };
+      if (!ensureBinary()) return notInstalledError();
+
+      const query = new URLSearchParams();
+      if (params.page && Number.isInteger(params.page) && params.page > 0) {
+        query.set("page", String(params.page));
+      }
+      if (params.limit && Number.isInteger(params.limit) && params.limit > 0) {
+        query.set("limit", String(Math.min(params.limit, 100)));
+      }
+      if (params.type && VALID_TYPES.has(params.type)) {
+        query.set("type", params.type);
       }
 
-      const port = 3099;
-      let url = `http://localhost:${port}/api/pages?`;
-      if (params.page) url += `page=${params.page}&`;
-      if (params.limit) url += `limit=${params.limit}&`;
-      if (params.type) url += `type=${params.type}&`;
+      const url = `http://localhost:3099/api/pages?${query.toString()}`;
 
       try {
-        const output = run(`curl -s "${url}"`);
+        const output = runFile("curl", ["-s", url]);
         return { content: [{ type: "text", text: output }] };
-      } catch (err: any) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify({
-                success: false,
-                error:
-                  "ContentClaw server is not running. Start it with: contentclaw serve",
-              }),
-            },
-          ],
-        };
+      } catch {
+        return errorResult("ContentClaw server is not running. Start it with: contentclaw serve");
       }
     },
   });
 
-  // Tool: Get a specific page
   api.registerTool({
     name: "contentclaw_page",
     description:
@@ -265,29 +257,21 @@ export default function register(api: any) {
       required: ["slug"],
     },
     async execute(_id: string, params: any) {
+      if (!isValidSlug(params.slug)) {
+        return errorResult("Invalid slug. Must be lowercase alphanumeric with hyphens.");
+      }
+
+      const url = `http://localhost:3099/api/pages/${encodeURIComponent(params.slug)}`;
+
       try {
-        const output = run(
-          `curl -s "http://localhost:3099/api/pages/${params.slug}"`
-        );
+        const output = runFile("curl", ["-s", url]);
         return { content: [{ type: "text", text: output }] };
-      } catch (err: any) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify({
-                success: false,
-                error:
-                  "ContentClaw server is not running. Start it with: contentclaw serve",
-              }),
-            },
-          ],
-        };
+      } catch {
+        return errorResult("ContentClaw server is not running. Start it with: contentclaw serve");
       }
     },
   });
 
-  // Tool: Start the server
   api.registerTool({
     name: "contentclaw_serve",
     description:
@@ -302,45 +286,33 @@ export default function register(api: any) {
       },
     },
     async execute(_id: string, params: any) {
-      if (!ensureBinary()) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify({
-                success: false,
-                error:
-                  "contentclaw is not installed. Run: npm install -g contentclaw",
-              }),
-            },
-          ],
-        };
-      }
+      if (!ensureBinary()) return notInstalledError();
 
-      const port = params.port || 3099;
+      const port = (params.port && Number.isInteger(params.port) && params.port > 0 && params.port < 65536)
+        ? params.port
+        : 3099;
+
       try {
-        execSync(`contentclaw serve --port ${port} &`, {
+        execFileSync("contentclaw", ["serve", "--port", String(port)], {
           encoding: "utf-8",
           timeout: 5000,
           stdio: "ignore",
         });
       } catch {
-        // background process - expected to "fail" exec since it keeps running
+        // background process - expected timeout since server keeps running
       }
 
       return {
-        content: [
-          {
-            type: "text",
-            text: JSON.stringify({
-              success: true,
-              message: `ContentClaw server starting on port ${port}`,
-              dashboard: `http://localhost:${port}`,
-              api: `http://localhost:${port}/api`,
-              docs: `http://localhost:${port}/docs`,
-            }),
-          },
-        ],
+        content: [{
+          type: "text",
+          text: JSON.stringify({
+            success: true,
+            message: `ContentClaw server starting on port ${port}`,
+            dashboard: `http://localhost:${port}`,
+            api: `http://localhost:${port}/api`,
+            docs: `http://localhost:${port}/docs`,
+          }),
+        }],
       };
     },
   });
